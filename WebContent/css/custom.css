@@ -1,1 +1,39 @@
-@charset "EUC-KR";
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap');
+@import url(http://fonts.googleapis.com/earlyaccess/hanna.css);
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&family=Noto+Sans+KR&display=swap');
+/* 폰트 디자인 처리 */
+* {
+	font-family: 'Nanum Gothic', sans-serif;
+}
+h5{
+	font-family: 'Noto Sans KR', sans-serif;
+	font-size: 15px;
+}
+h4{
+	font-family: 'Noto Sans KR', sans-serif;
+}
+h3{
+	font-family: 'Hanna';
+}
+h2{
+	font-family: 'Hanna';
+}
+h1{
+	font-family: 'Hanna';
+}
+/* 테이블 관련 디자인 처리 */
+table th{
+	background-color: #006DCC;
+	color: white;
+	text-align: center;
+}
+tr td:first-child,
+tr th:first-child{
+	border-top-left-radius: 6px;
+	border-bottom-left-radius: 6px;
+}
+tr td:last-child,
+tr th:last-child{
+	border-top-left-radius: 6px;
+	border-bottom-left-radius: 6px;
+}
