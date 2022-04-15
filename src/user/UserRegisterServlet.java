@@ -28,7 +28,7 @@ public class UserRegisterServlet extends HttpServlet {
 				userEmail == null || userEmail.equals("")) {
 			request.getSession().setAttribute("messageType", "오류 메시지");
 			request.getSession().setAttribute("messageContent", "모든 내용을 입력하세요.");
-			response.sendRedirect("join,jsp");
+			response.sendRedirect("join.jsp");
 			return;
 		}
 		if(!userPassword1.equals(userPassword2)) {

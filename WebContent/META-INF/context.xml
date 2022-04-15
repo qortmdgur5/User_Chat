@@ -1,4 +1,4 @@
-<Context path="/UserChat" docBase="www">
+<Context path="/UserChat" docBase="UserChat">
 <Resource
 	name="jdbc/UserChat"
 	auth="Container"
