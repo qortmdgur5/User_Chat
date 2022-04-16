@@ -2,6 +2,16 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<%
+		String userID = null;
+		if(session.getAttribute("userID") != null){
+			userID = (String) session.getAttribute("userID");
+		}
+		String toID = null;
+		if(request.getParameter("toID") != null) {
+			toID = (String) request.getParameter("toID");
+		}
+	%>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="css/bootstrap.css">
@@ -9,14 +19,37 @@
 	<title>JSP Ajax 실시간 회원제 채팅 서비스</title>
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 	<script src="js/bootstrap.js"></script>
+	<script type="text/javascript">
+		function autoClosingAlert(selector, delay) {
+			var alert = $(selector).alert();
+			alert.show();
+			window.setTimeout(function() { alert.hide() }, delay);
+		}
+		function submitFunction() {
+			var fromID = '<%= userID %>';
+			var toID = '<%= toID %>';
+			var chatContent = $('#chatContent').val();
+			$.ajax({
+				type: "POST",
+				url: "./ChatSubmitServlet",
+				data: {
+					fromID: encodeURIComponent(fromID),
+					toID: encodeURIComponent(toID),
+					chatContent: encodeURIComponent(chatContent)
+				},
+				success: function(result) {
+					if(result == 1) {
+						autoClosingAlert('#successMessage', 2000);
+					} else {
+						autoClosingAlert('#dangerMessage', 2000);
+					}
+				}
+			});
+			$('#chatContent').val('');
+		}
+	</script>
 </head>
 <body>
-	<%
-		String userID = null;
-		if(session.getAttribute("userID") != null){
-			userID = (String) session.getAttribute("userID");
-		}
-	%>
 	<nav class="navbar navbar-default">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle collapsed"
@@ -34,6 +67,21 @@
 			</ul>
 			<%
 				if(userID == null){
+			%>
+			<ul class="nav navbar-nav navbar-right">
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle"
+						data-toggle="dropdown" role="button" aria-haspopup="true"
+						aria-expanded="false">접속하기<span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu">
+						<li><a href="login.jsp">로그인</a></li>
+						<li><a href="join.jsp">회원가입</a></li>
+					</ul>
+				</li>
+			</ul>
+			<%
+				} else {
 			%>
 			<ul class="nav navbar-nav navbar-right">
 				<li class="dropdown">
@@ -62,11 +110,6 @@
 						<div id="chatList" class="portlet-body chat-widget" style="overflow-y: auto; width: auto; height: 600px;">
 						</div>
 						<div class="portlet-footer">
-							<div class="row">
-								<div class="form-group col-xs-4">
-									<input style="height: 40px;" type="text" id="charName" class="form-control" placeholder="이름" maxlength="8">
-								</div>
-							</div>
 							<div class="row" style="height: 90px;">
 								<div class="form-group col-xs-10">
 									<textarea style="height: 80px;" id="chatContent" class="form-control" placeholder="메시지를 입력하세요." maxlength="100"></textarea>
