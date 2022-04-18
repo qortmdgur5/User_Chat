@@ -37,6 +37,7 @@
 			alert.show();
 			window.setTimeout(function() { alert.hide() }, delay);
 		}
+		// 채팅전송 함수
 		function submitFunction() {
 			var fromID = '<%= userID %>';
 			var toID = '<%= toID %>';
@@ -58,6 +59,65 @@
 				}
 			});
 			$('#chatContent').val('');
+		}
+		
+		//채팅리스트 가져오는 함수
+		var lastID = 0;
+		function chatListFunction(type) {
+			var fromID = '<%= userID %>';
+			var toID = '<%= toID %>';
+			$.ajax({
+				type: "POST",
+				url: "./ChatListServlet",
+				data: {
+					fromID: encodeURIComponent(fromID),
+					toID: encodeURIComponent(toID),
+					listType: type
+				},
+				success: function(data) {
+					if(data == "") return;
+					var parsed = JSON.parse(data);
+					var result = parsed.result;
+					for(var i = 0; i < result.length; i++){
+						if(result[i][0].value == fromID) {
+							result[i][0].value = '나';
+						}
+						addChat(result[i][0].value, result[i][2].value, result[i][3].value);
+					}
+					lastID = Number(parsed.last);
+				}
+			});
+		}
+		
+		//채팅출력 함수
+		function addChat(chatName, chatContent, chatTime){
+			$('#chatList').append('<div class="row">' +
+					'<div class="col-lg-12">'+
+					'<div class="media">' +
+					'<a class="pull-left" href="#">' +
+					'<img class="media-object img-circle" style="width:30px; height:30px;" src="images/icon.png" alt="">' +
+					'</a>' +
+					'<div class="media-body">' +
+					'<h4 class="media-heading">' +
+					chatName +
+					'<span class="small pull-right">' +
+					chatTime +
+					'</span>' +
+					'</h4>' +
+					'<p>' +
+					chatContent +
+					'</p>' +
+					'</div>' +
+					'</div>' +
+					'</div>' +
+					'</div>' +
+					'<hr>');
+			$('#chatList').scrollTop($('#chatList')[0].scrollHeight);
+		}
+		function getInfiniteChat() {
+			setInterval(function() {
+				chatListFunction(lastID);
+			}, 3000);
 		}
 	</script>
 </head>
@@ -176,5 +236,11 @@
 		session.removeAttribute("messageType");
 		}
 	%>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			chatListFunction('ten');
+			getInfiniteChat();
+		});
+	</script>
 </body>
 </html>
