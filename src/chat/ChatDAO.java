@@ -176,7 +176,7 @@ public class ChatDAO {
 	return -1; //데이터베이스 오류
 	}
 	
-	//자신이 읽지않은 메시지의 갯수를 가져오는 기능
+	//자신이 읽지않은 전체 메시지의 갯수를 가져오는 기능
 	public int getAllUnreadChat(String userID) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -262,6 +262,36 @@ public class ChatDAO {
 			}
 		}
 		return chatList; // 채팅 리스트 반환
+	}
+	
+	//자신이 읽지않은 상대방 개개인의 메시지 갯수를 가져오는 함수
+	public int getUnreadChat(String fromID, String toID) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String SQL = "SELECT COUNT(chatID) FROM CHAT WHERE fromID = ? AND toID = ? AND chatRead = 0";
+		try {
+			conn = dataSource.getConnection();
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setString(1, fromID);
+			pstmt.setString(2, toID);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				return rs.getInt("COUNT(chatID)");
+			}
+			return 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	return -1; //데이터베이스 오류
 	}
 	
 }
