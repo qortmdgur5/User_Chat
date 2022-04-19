@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @WebServlet("/ChatBoxServlet")
 public class ChatBoxServlet extends HttpServlet {
@@ -19,9 +20,14 @@ public class ChatBoxServlet extends HttpServlet {
 		response.setContentType("text/html;charset=UTF-8");
 		String userID = request.getParameter("userID");
 		if(userID == null || userID.equals("")) {
-			response.getWriter().write("0");
+			response.getWriter().write("");
 		} else {
 			try {
+				HttpSession session = request.getSession();
+				if(!userID.equals((String) session.getAttribute("userID"))) {
+					response.getWriter().write("");
+					return;
+				}
 				userID = URLDecoder.decode(userID, "UTF-8");
 				response.getWriter().write(getBox(userID));
 			} catch (Exception e) {
