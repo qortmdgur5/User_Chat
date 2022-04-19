@@ -148,7 +148,7 @@ public class UserDAO {
 		}
 		return user;  //데이터베이스 오류
 	}
-	
+	//회원정보 수정
 	public int update(String userID, String userPassword, String userName, String userAge, String userGender, String userEmail) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -162,6 +162,30 @@ public class UserDAO {
 			pstmt.setString(4, userGender);
 			pstmt.setString(5, userEmail);
 			pstmt.setString(6, userID);
+			return pstmt.executeUpdate();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return -1;  //데이터베이스 오류
+	}
+	
+	//프로필 업데이트
+	public int profile(String userID, String userProfile) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		String SQL = "UPDATE USER SET userProfile = ? WHERE userID = ?";
+		try {
+			conn = dataSource.getConnection();
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setString(1, userProfile);
+			pstmt.setString(2, userID);
 			return pstmt.executeUpdate();
 		}catch(Exception e) {
 			e.printStackTrace();

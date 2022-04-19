@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="user.UserDTO" %>
+<%@ page import="user.UserDAO" %>
 <!DOCTYPE html>
 <html>
 	<%
@@ -12,6 +14,7 @@
 			response.sendRedirect("index.jsp");
 			return;
 		}
+		UserDTO user = new UserDAO().getUser(userID);
 	%>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -23,7 +26,7 @@
 	<script src="js/bootstrap.js"></script>
 	<script type="text/javascript">
 	
-		//읽지않은 채팅 갯수 가져오기
+		//읽지않은 채팅 가져오기
 		function getUnread() {
 			$.ajax({
 				type: "POST",
@@ -50,49 +53,15 @@
 		function showUnread(result) {
 			$('#unread').html(result);
 		}
-		
-		//메시지함 기능
-		function chatBoxFunction() {
-			var userID = '<%= userID %>'
-			$.ajax({
-				type: "POST",
-				url: "./chatBox",
-				data: {
-					userID: encodeURIComponent(userID),
-				},
-				success: function(data) {
-					if(data == "") return;
-					$('#boxTable').html('');
-					var parsed = JSON.parse(data);
-					var result = parsed.result;
-					for(var i = 0; i < result.length; i++) {
-						if(result[i][0].value == userID) {
-							result[i][0].value = result[i][1].value;
-						} else {
-							result[i][1].value = result[i][0].value;
-						}
-						addBox(result[i][0].value, result[i][1].value, result[i][2].value, result[i][3].value, result[i][4].value);
-					}
-				}
-			});
-		}
-		//메시지함 채팅목록 담기
-		function addBox(lastID, toID, chatContent, chatTime, unread) {
-			$('#boxTable').append('<tr onclick="location.href=\'chat.jsp?toID=' + encodeURIComponent(toID) + '\'">' +
-					'<td style="width: 150px;"><h5>' + lastID + '</h5></td>' +
-					'<td>' +
-					'<h5>' + chatContent +
-					'<span class="label label-info">' + unread + '</span></h5>' +
-					'<div class="pull-right">' + chatTime + '</div>' +
-					'</td>' +
-					'</tr>');
-		}
-		
-		//3초마다 메시지함 갱신
-		function getInfiniteBox() {
-			setInterval(function() {
-				chatBoxFunction();
-			}, 3000);
+		//비밀번호 확인 함수
+		function passwordCheckFunction() {
+			var userPassword1 = $('#userPassword1').val();
+			var userPassword2 = $('#userPassword2').val();
+			if(userPassword1 != userPassword2){
+				$('#passwordCheckMessage').html('비밀번호가 서로 일치하지 않습니다.');
+			} else {
+				$('#passwordCheckMessage').html('');
+			}
 		}
 	</script>
 </head>
@@ -112,26 +81,8 @@
 			<ul class="nav navbar-nav">
 				<li><a href="index.jsp">메인</a>
 				<li><a href="find.jsp">친구찾기</a></li>
-				<li class="active"><a href="box.jsp">메시지함<span id="unread" class="label label-info"></span></a></li>
+				<li><a href="box.jsp">메시지함<span id="unread" class="label label-info"></span></a></li>
 			</ul>
-			<%
-				if(userID == null){
-			%>
-			<ul class="nav navbar-nav navbar-right">
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle"
-						data-toggle="dropdown" role="button" aria-haspopup="true"
-						aria-expanded="false">접속하기<span class="caret"></span>
-					</a>
-					<ul class="dropdown-menu">
-						<li><a href="login.jsp">로그인</a></li>
-						<li><a href="join.jsp">회원가입</a></li>
-					</ul>
-				</li>
-			</ul>
-			<%
-				} else {
-			%>
 			<ul class="nav navbar-nav navbar-right">
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle"
@@ -145,25 +96,36 @@
 					</ul>
 				</li>
 			</ul>
-			<%
-				}
-			%>
 		</div>
 	</nav>
 	<div class="container">
-		<table class="table" style="margin: 0 auto;">
-			<thead>
-				<tr>
-					<th><h4>주고받은 메시지 목록</h4></th>
-				</tr>
-			</thead>
-			<div style="overflow-y: auto; width: 100%; max-height: 450px;">
-				<table class="table table-bordered table-hover" style="text-align:center; border: 1px solid #dddddd; margin: 0 auto;">
-					<tbody id="boxTable">
-					</tbody>
-				</table>
-			</div>
-		</table>
+		<form method="post" action="./userProfile" enctype="multipart/form-data">
+			<table class="table table-bordered table-hover" style="text-align: center; border: 1px solid #dddddd">
+				<thead>
+					<tr>
+						<th colspan="3"><h4>프로필 사진 수정 양식</h4>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td style="width: 110px;"><h5>아이디</h5></td>
+						<td><h5><%=user.getUserID() %></h5>
+						<input type="hidden" name="userID" value="<%= user.getUserID() %>"></td>
+					</tr>
+					<tr>
+						<td style="width: 110px;"><h5>사진 업로드</h5></td>
+						<td colspan="2">
+							<span class="btn btn-default btn-file">
+								이미지를 업로드하세요.<input type="file" name="userProfile">
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: left;" colspan="3"><h5 style="color: red;"></h5><input class="btn btn-primary pull-right" type="submit" value="등록"></td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
 	</div>
 	<%
 		String messageContent = null;
@@ -199,23 +161,20 @@
 			</div>
 		</div>
 	</div>
+	<script>
+		$('#messageModal').modal("show");
+	</script>
 	<%
 		session.removeAttribute("messageContent");
 		session.removeAttribute("messageType");
 		}
 	%>
-	<script>
-		$('#messageModal').modal("show");
-	</script>
 	<%
 		if(userID != null) {
 	%>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			getUnread();
 			getInfiniteUnread();
-			chatBoxFunction();
-			getInfiniteBox();
 		});
 	</script>
 	<%

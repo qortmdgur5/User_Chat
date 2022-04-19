@@ -91,6 +91,7 @@
 					</a>
 					<ul class="dropdown-menu">
 						<li class="active"><a href="update.jsp">회원정보수정</a></li>
+						<li><a href="profileUpdate.jsp">프로필 수정</a></li>
 						<li><a href="logoutAction.jsp">로그아웃</a></li>
 					</ul>
 				</li>
@@ -132,10 +133,10 @@
 						<td colspan="2">
 							<div class="form-group" style="text-align: center; margin: 0 auto;">
 								<div class="btn-group" data-toggle="buttons">
-									<label class="btn btn-primary active">
+									<label class="btn btn-primary <% if(user.getUserGender().equals("남자")) out.print("active"); %>">
 										<input type="radio" name="userGender" autocomplete="off" value="남자" <% if(user.getUserGender().equals("남자")) out.print("checked"); %> >남자
 									</label>
-									<label class="btn btn-primary">
+									<label class="btn btn-primary <% if(user.getUserGender().equals("여자")) out.print("active"); %>">
 										<input type="radio" name="userGender" autocomplete="off" value="여자" <% if(user.getUserGender().equals("여자")) out.print("checked"); %>>여자
 									</label>
 								</div>
