@@ -265,6 +265,10 @@ a:hover{
 	cursor: inherit;
 	display: block;
 }
+.file {
+	visibility: hidden;
+	position: absolute;
+}
 
 
 

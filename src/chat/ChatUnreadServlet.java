@@ -23,7 +23,7 @@ public class ChatUnreadServlet extends HttpServlet {
 		} else {
 			userID = URLDecoder.decode(userID, "UTF-8");
 			HttpSession session = request.getSession();
-			if(!userID.equals((String) session.getAttribute("userID"))) {
+			if(!URLDecoder.decode(userID, "UTF-8").equals((String) session.getAttribute("userID"))) {
 				response.getWriter().write("");
 				return;
 			}

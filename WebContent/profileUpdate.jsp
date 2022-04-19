@@ -115,9 +115,14 @@
 					<tr>
 						<td style="width: 110px;"><h5>사진 업로드</h5></td>
 						<td colspan="2">
-							<span class="btn btn-default btn-file">
-								이미지를 업로드하세요.<input type="file" name="userProfile">
-							</span>
+							<input type="file" name="userProfile" class="file">
+							<div class="input-group col-xs-12">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-picture"></i></span>
+								<input type="text" class="form-control input-lg" disabled placeholder="이미지를 업로드하세요.">
+								<span class="input-group-btn">
+									<button class="browse btn btn-primary input-lg" type="button"><i class="glyphicon glyphicon-search">파일 찾기</i></button>
+								</span>
+							</div>
 						</td>
 					</tr>
 					<tr>
@@ -180,5 +185,14 @@
 	<%
 		}
 	%>
+	<script type="text/javascript">
+		$(document).on('click', '.browse', function() {
+			var file = $(this).parent().parent().parent().find('.file');
+			file.trigger('click');
+		});
+		$(document).on('change', '.file', function() {
+			$(this).parent().find('.form-control').val($(this).val().replace(/C:\\fakepath\\/i, ''));
+		})
+	</script>
 </body>
 </html>
