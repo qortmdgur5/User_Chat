@@ -136,6 +136,11 @@
 		$('#messageModal').modal("show");
 	</script>
 	<%
+		session.removeAttribute("messageContent");
+		session.removeAttribute("messageType");
+		}
+	%>
+	<%
 		if(userID != null) {
 	%>
 	<script type="text/javascript">
@@ -144,11 +149,6 @@
 		});
 	</script>
 	<%
-		}
-	%>
-	<%
-		session.removeAttribute("messageContent");
-		session.removeAttribute("messageType");
 		}
 	%>
 </body>

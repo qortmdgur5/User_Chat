@@ -119,6 +119,34 @@
 				chatListFunction(lastID);
 			}, 3000);
 		}
+		
+		//읽지않은 채팅 가져오기
+		function getUnread() {
+			$.ajax({
+				type: "POST",
+				url: "./chatUnread",
+				data: {
+					userID: encodeURIComponent('<%= userID %>'),
+				},
+				success: function(result) {
+					if(result >= 1) {
+						showUnread(result);
+					} else {
+						showUnread('');
+					}
+				}
+			});
+		}
+		
+		//일정 주기마다 읽지않은 메시지를 알려주는 함수 (페이지를 열고 4초 뒤)
+		function getInfiniteUnread() {
+			setInterval(function() {
+				getUnread();
+			}, 4000);
+		}
+		function showUnread(result) {
+			$('#unread').html(result);
+		}
 	</script>
 </head>
 <body>
@@ -137,6 +165,7 @@
 			<ul class="nav navbar-nav">
 				<li><a href="index.jsp">메인</a></li>
 				<li><a href="find.jsp">친구찾기</a></li>
+				<li><a href="box.jsp">메시지함<span id="unread" class="label label-info"></span></a></li>
 			</ul>
 			<%
 				if(userID != null) {
@@ -239,8 +268,10 @@
 	%>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			chatListFunction('ten');
+			getUnread();
+			chatListFunction('0');
 			getInfiniteChat();
+			getInfiniteUnread();
 		});
 	</script>
 </body>
