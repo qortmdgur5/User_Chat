@@ -266,4 +266,59 @@ public class BoardDAO {
 		return -1;  //데이터베이스 오류
 	}
 	
+	
+	//답글달기
+	public int reply(String userID, String boardTitle, String boardContent, String boardFile, String boardRealFile, BoardDTO parent) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		String SQL = "INSERT INTO BOARD SELECT ?, IFNULL((SELECT MAX(boardID) + 1 FROM BOARD), 1), ?, ?, now(), 0, ?, ?, ?, ?, ?";
+		try {
+			conn = dataSource.getConnection();
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setString(1, userID);
+			pstmt.setString(2, boardTitle);
+			pstmt.setString(3, boardContent);
+			pstmt.setString(4, boardFile);
+			pstmt.setString(5, boardRealFile);
+			pstmt.setInt(6, parent.getBoardGroup());
+			pstmt.setInt(7, parent.getBoardSequence() + 1);
+			pstmt.setInt(8, parent.getBoardLevel() + 1);
+			return pstmt.executeUpdate();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return -1;  //데이터베이스 오류
+	}
+	
+	//답글 수정
+	public int replyUpdate(BoardDTO parent) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		String SQL = "UPDATE BOARD SET boardSequence = boardSequence + 1 WHERE boardGroup = ? AND boardSequence > ?";
+		try {
+			conn = dataSource.getConnection();
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setInt(1, parent.getBoardGroup());
+			pstmt.setInt(2, parent.getBoardSequence());
+			return pstmt.executeUpdate();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return -1;  //데이터베이스 오류
+	}
+	
 }

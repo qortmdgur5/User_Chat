@@ -132,7 +132,15 @@
 			%>
 				<tr>
 					<td><%= board.getBoardID() %></td>
-					<td style="text-align: left;"><a href="boardShow.jsp?boardID=<%= board.getBoardID() %>"><%= board.getBoardTitle() %></a></td>
+					<td style="text-align: left;">
+					<a href="boardShow.jsp?boardID=<%= board.getBoardID() %>">
+			<%
+				for(int j = 0; j < board.getBoardLevel(); j ++) {		
+			%>
+					<span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+			<%
+				}
+			%><%= board.getBoardTitle() %></a></td>
 					<td><%= board.getUserID() %></td>
 					<td><%= board.getBoardDate() %></td>
 					<td><%= board.getBoardHit() %></td>
