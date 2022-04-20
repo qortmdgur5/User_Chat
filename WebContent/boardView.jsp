@@ -10,7 +10,7 @@
 			userID = (String) session.getAttribute("userID");
 		}
 		if (userID == null) {
-			session.setAttribute("messagetType", "오류 메시지");
+			session.setAttribute("messageType", "오류 메시지");
 			session.setAttribute("messageContent", "현재 로그인이 되어 있지 않습니다.");
 			response.sendRedirect("index.jsp");
 			return;
@@ -140,7 +140,20 @@
 					<span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
 			<%
 				}
-			%><%= board.getBoardTitle() %></a></td>
+			%>
+			<%
+				if(board.getBoardAvailable() == 0) {
+					
+			%>
+				(삭제된 게시물입니다.)
+			<%
+				} else {
+			%>
+				<%= board.getBoardTitle() %>
+			<%
+				}
+			%>
+			</a></td>
 					<td><%= board.getUserID() %></td>
 					<td><%= board.getBoardDate() %></td>
 					<td><%= board.getBoardHit() %></td>

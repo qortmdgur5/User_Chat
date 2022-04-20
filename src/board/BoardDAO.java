@@ -28,7 +28,7 @@ public class BoardDAO {
 	public int write(String userID, String boardTitle, String boardContent, String boardFile, String boardRealFile) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		String SQL = "INSERT INTO BOARD SELECT ?, IFNULL((SELECT MAX(boardID) + 1 FROM BOARD), 1), ?, ?, now(), 0, ?, ?, IFNULL((SELECT MAX(boardGroup) + 1 FROM BOARD), 0), 0, 0";
+		String SQL = "INSERT INTO BOARD SELECT ?, IFNULL((SELECT MAX(boardID) + 1 FROM BOARD), 1), ?, ?, now(), 0, ?, ?, IFNULL((SELECT MAX(boardGroup) + 1 FROM BOARD), 0), 0, 0, 1";
 		try {
 			conn = dataSource.getConnection();
 			pstmt = conn.prepareStatement(SQL);
@@ -75,6 +75,7 @@ public class BoardDAO {
 				board.setBoardGroup(rs.getInt("boardGroup"));
 				board.setBoardSequence(rs.getInt("boardSequence"));
 				board.setBoardLevel(rs.getInt("boardLevel"));
+				board.setBoardAvailable(rs.getInt("boardAvailable"));
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -115,6 +116,7 @@ public class BoardDAO {
 				board.setBoardGroup(rs.getInt("boardGroup"));
 				board.setBoardSequence(rs.getInt("boardSequence"));
 				board.setBoardLevel(rs.getInt("boardLevel"));
+				board.setBoardAvailable(rs.getInt("boardAvailable"));
 				boardList.add(board);
 			}
 		}catch(Exception e) {
@@ -247,7 +249,7 @@ public class BoardDAO {
 	public int delete(String boardID) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		String SQL = "DELETE FROM BOARD WHERE boardID = ?";
+		String SQL = "UPDATE BOARD SET boardAvailable = 0 WHERE boardID = ?";
 		try {
 			conn = dataSource.getConnection();
 			pstmt = conn.prepareStatement(SQL);
@@ -271,7 +273,7 @@ public class BoardDAO {
 	public int reply(String userID, String boardTitle, String boardContent, String boardFile, String boardRealFile, BoardDTO parent) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		String SQL = "INSERT INTO BOARD SELECT ?, IFNULL((SELECT MAX(boardID) + 1 FROM BOARD), 1), ?, ?, now(), 0, ?, ?, ?, ?, ?";
+		String SQL = "INSERT INTO BOARD SELECT ?, IFNULL((SELECT MAX(boardID) + 1 FROM BOARD), 1), ?, ?, now(), 0, ?, ?, ?, ?, ?, 1";
 		try {
 			conn = dataSource.getConnection();
 			pstmt = conn.prepareStatement(SQL);
