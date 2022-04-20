@@ -60,10 +60,10 @@
 		</div>
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			<ul class="nav navbar-nav">
-				<li class="active"><a href="index.jsp">메인</a>
+				<li><a href="index.jsp">메인</a>
 				<li><a href="find.jsp">친구찾기</a></li>
 				<li><a href="box.jsp">메시지함<span id="unread" class="label label-info"></span></a></li>
-				<li><a href="boardView.jsp">자유게시판</a></li>
+				<li class="active"><a href="boardView.jsp">자유게시판</a></li>
 			</ul>
 			<%
 				if(userID == null){
@@ -101,6 +101,34 @@
 			%>
 		</div>
 	</nav>
+	<div class="container">
+		<table class="table table-bordered table-hover" style="text-align: center; border: 1px solid #dddddd">
+			<thead>
+				<tr>
+					<th colspan="5"><h4>자유 게시판</h4></th>
+				</tr>
+				<tr>
+					<th style="background-color: #fafafa; color: #000000; width: 70px;"><h5>번호</h5></th>
+					<th style="background-color: #fafafa; color: #000000;"><h5>제목</h5></th>
+					<th style="background-color: #fafafa; color: #000000;"><h5>작성자</h5></th>
+					<th style="background-color: #fafafa; color: #000000; width: 100px;"><h5>작성 날짜</h5></th>
+					<th style="background-color: #fafafa; color: #000000; width: 70px;"><h5>조회수</h5></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>1</td>
+					<td>안녕하세요.</td>
+					<td>홍길동</td>
+					<td>2018-01-01</td>
+					<td>1</td>
+				</tr>
+				<tr>
+					<td colspan="5"><a href="boardWrite.jsp" class="btn btn-primary pull-right" type="submit">글쓰기</a></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 	<%
 		String messageContent = null;
 		if(session.getAttribute("messageContent") != null){
