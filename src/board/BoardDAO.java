@@ -131,4 +131,88 @@ public class BoardDAO {
 		return boardList;  //데이터베이스 오류
 	}
 	
+	
+	//조회수 증가
+	public int hit(String boardID) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		String SQL = "UPDATE BOARD SET boardHit = boardHit + 1 WHERE boardID = ?";
+		try {
+			conn = dataSource.getConnection();
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setString(1, boardID);
+			return pstmt.executeUpdate();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return -1;  //데이터베이스 오류
+	}
+	
+	
+	//게시글 파일 가져오기
+	public String getFile(String boardID) {
+		BoardDTO board = new BoardDTO();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String SQL = "SELECT boardFile FROM BOARD WHERE boardID = ?";
+		try {
+			conn = dataSource.getConnection();
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setString(1, boardID);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				return rs.getString("boardFile");
+			}
+			return "";
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return "";  //데이터베이스 오류
+	}
+	
+	public String getRealFile(String boardID) {
+		BoardDTO board = new BoardDTO();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String SQL = "SELECT boardRealFile FROM BOARD WHERE boardID = ?";
+		try {
+			conn = dataSource.getConnection();
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setString(1, boardID);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				return rs.getString("boardRealFile");
+			}
+			return "";
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return "";  //데이터베이스 오류
+	}
+	
 }

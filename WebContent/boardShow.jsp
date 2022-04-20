@@ -15,7 +15,13 @@
 			response.sendRedirect("index.jsp");
 			return;
 		}
-		ArrayList<BoardDTO> boardList = new BoardDAO().getList();
+		String boardID = null;
+		if (request.getParameter("boardID") != null) {
+			boardID = (String) request.getParameter("boardID");
+		}
+		BoardDAO boardDAO = new BoardDAO();
+		BoardDTO board = boardDAO.getBoard(boardID);
+		boardDAO.hit(boardID);
 	%>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -115,33 +121,46 @@
 		<table class="table table-bordered table-hover" style="text-align: center; border: 1px solid #dddddd">
 			<thead>
 				<tr>
-					<th colspan="5"><h4>자유 게시판</h4></th>
+					<th colspan="4"><h4>게시물 보기</h4></th>
 				</tr>
 				<tr>
-					<th style="background-color: #fafafa; color: #000000; width: 70px;"><h5>번호</h5></th>
-					<th style="background-color: #fafafa; color: #000000;"><h5>제목</h5></th>
-					<th style="background-color: #fafafa; color: #000000;"><h5>작성자</h5></th>
-					<th style="background-color: #fafafa; color: #000000; width: 100px;"><h5>작성 날짜</h5></th>
-					<th style="background-color: #fafafa; color: #000000; width: 70px;"><h5>조회수</h5></th>
+					<td style="background-color: #fafafa; color: #000000; width: 80px;"><h5>제목</h5></td>
+					<td colspan="3"><h5><%= board.getBoardTitle() %></h5></td>
+				</tr>
+				<tr>
+					<td style="background-color: #fafafa; color: #000000; width: 80px;"><h5>작성자</h5></td>
+					<td colspan="3"><h5><%= board.getUserID() %></h5></td>
+				</tr>
+				<tr>
+					<td style="background-color: #fafafa; color: #000000; width: 80px;"><h5>작성날짜</h5></td>
+					<td><h5><%= board.getBoardDate() %></h5></td>
+					<td style="background-color: #fafafa; color: #000000; width: 80px;"><h5>조회수</h5></td>
+					<td><h5><%= board.getBoardHit() %></h5></td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; min-height: 150px; background-color: #fafafa; color: #000000; width: 80px;"><h5>글 내용</h5></td>
+					<td colspan="3"><h5><%= board.getBoardContent() %></h5></td>
+				</tr>
+				<tr>
+					<td style="background-color: #fafafa; color: #000000; width: 80px;"><h5>첨부파일</h5></td>
+					<td colspan="3"><h5><a href="boardDownload.jsp?boardID=<%= board.getBoardID() %>"><%= board.getBoardFile() %></a></h5></td>
 				</tr>
 			</thead>
 			<tbody>
-			<%
-				for(int i = 0; i < boardList.size(); i++) {
-					BoardDTO board = boardList.get(i);
-			%>
 				<tr>
-					<td><%= board.getBoardID() %></td>
-					<td style="text-align: left;"><a href="boardShow.jsp?boardID=<%= board.getBoardID() %>"><%= board.getBoardTitle() %></a></td>
-					<td><%= board.getUserID() %></td>
-					<td><%= board.getBoardDate() %></td>
-					<td><%= board.getBoardHit() %></td>
-				</tr>
-			<%
-				}	
-			%>
-				<tr>
-					<td colspan="5"><a href="boardWrite.jsp" class="btn btn-primary pull-right" type="submit">글쓰기</a></td>
+					<td colspan="5" style="text-align: right;">
+						<a href="boardUpdate.jsp?boardID=<%=board.getBoardID() %>" class="btn btn-primary">수정</a>
+						<a href="boardView.jsp" class="btn btn-primary">목록</a>
+						<a href="boardReply.jsp?boardID=<%=board.getBoardID() %>" class="btn btn-primary">댓글</a>
+						<%
+							if(userID.equals(board.getUserID())) {
+								
+						%>
+							<a href="boardDelete.jsp?boardID=<%=board.getBoardID() %>" class="btn btn-primary">삭제</a>
+						<%
+							}
+						%>
+					</td>
 				</tr>
 			</tbody>
 		</table>
