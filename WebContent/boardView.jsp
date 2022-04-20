@@ -1,4 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="board.BoardDAO" %>
+<%@ page import="board.BoardDTO" %>
+<%@ page import="java.util.ArrayList" %>
 <!DOCTYPE html>
 <html>
 	<%
@@ -6,6 +9,13 @@
 		if(session.getAttribute("userID") != null){
 			userID = (String) session.getAttribute("userID");
 		}
+		if (userID == null) {
+			session.setAttribute("messagetType", "오류 메시지");
+			session.setAttribute("messageContent", "현재 로그인이 되어 있지 않습니다.");
+			response.sendRedirect("index.jsp");
+			return;
+		}
+		ArrayList<BoardDTO> boardList = new BoardDAO().getList();
 	%>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -116,13 +126,20 @@
 				</tr>
 			</thead>
 			<tbody>
+			<%
+				for(int i = 0; i < boardList.size(); i++) {
+					BoardDTO board = boardList.get(i);
+			%>
 				<tr>
-					<td>1</td>
-					<td>안녕하세요.</td>
-					<td>홍길동</td>
-					<td>2018-01-01</td>
-					<td>1</td>
+					<td><%= board.getBoardID() %></td>
+					<td style="text-align: left;"><a href="boardShow.jsp?boardID="<%= board.getBoardID() %>><%= board.getBoardTitle() %></a></td>
+					<td><%= board.getUserID() %></td>
+					<td><%= board.getBoardDate() %></td>
+					<td><%= board.getBoardHit() %></td>
 				</tr>
+			<%
+				}	
+			%>
 				<tr>
 					<td colspan="5"><a href="boardWrite.jsp" class="btn btn-primary pull-right" type="submit">글쓰기</a></td>
 				</tr>
