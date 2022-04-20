@@ -13,7 +13,7 @@ import com.oreilly.servlet.MultipartRequest;
 import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 
 
-public class BoardWriteServlet extends HttpServlet {
+public class BoardUpdateServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -38,6 +38,21 @@ public class BoardWriteServlet extends HttpServlet {
 			response.sendRedirect("index.jsp");
 			return;
 		}
+		String boardID = multi.getParameter("boardID");
+		if(boardID == null || boardID.equals("")) {
+			session.setAttribute("messageType", "오류 메시지");
+			session.setAttribute("messageContent", "접근할 수 없습니다.");
+			response.sendRedirect("index.jsp");
+			return;
+		}
+		BoardDAO boardDAO = new BoardDAO();
+		BoardDTO board = boardDAO.getBoard(boardID);
+		if(!userID.equals((String) session.getAttribute("userID"))) {
+			session.setAttribute("messageType", "오류 메시지");
+			session.setAttribute("messageContent", "접근할 수 없습니다.");
+			response.sendRedirect("index.jsp");
+			return;
+		}
 		String boardTitle = multi.getParameter("boardTitle");
 		String boardContent = multi.getParameter("boardContent");
 		if(boardTitle == null || boardTitle.equals("") || boardContent == null || boardContent.equals("")) {
@@ -52,11 +67,18 @@ public class BoardWriteServlet extends HttpServlet {
 		if(file != null) {
 			boardFile = multi.getOriginalFileName("boardFile");
 			boardRealFile = file.getName();
+			String prev = boardDAO.getRealFile(boardID);
+			File prevFile = new File(savePath + "/" + prev);
+			if(prevFile.exists()) {
+				prevFile.delete();
+			}
+		} else {
+			boardFile = boardDAO.getFile(boardID);
+			boardRealFile = boardDAO.getRealFile(boardID);
 		}
-		BoardDAO boardDAO = new BoardDAO();
-		boardDAO.write(userID, boardTitle, boardContent, boardFile, boardRealFile);
+		boardDAO.update(boardID, boardTitle, boardContent, boardFile, boardRealFile);
 		session.setAttribute("messageType", "성공 메시지");
-		session.setAttribute("messageContent", "성공적으로 게시물이 작성되었습니다.");
+		session.setAttribute("messageContent", "성공적으로 게시물이 수정되었습니다.");
 		response.sendRedirect("boardView.jsp");
 		return;
 	}
