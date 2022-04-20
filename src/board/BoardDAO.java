@@ -92,15 +92,17 @@ public class BoardDAO {
 	}
 	
 	//자유게시판 글목록 가져오기
-	public ArrayList<BoardDTO> getList() {
+	public ArrayList<BoardDTO> getList(String pageNumber) {
 		ArrayList<BoardDTO> boardList = null;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		String SQL = "SELECT * FROM BOARD ORDER BY boardGroup DESC, boardSequence ASC";
+		String SQL = "SELECT * FROM BOARD WHERE boardGroup > (SELECT MAX(boardGroup) FROM BOARD) - ? AND boardGroup <= (SELECT MAX(boardGroup) FROM BOARD) - ? ORDER BY boardGroup DESC, boardSequence ASC";
 		try {
 			conn = dataSource.getConnection();
 			pstmt = conn.prepareStatement(SQL);
+			pstmt.setInt(1, Integer.parseInt(pageNumber) * 10);
+			pstmt.setInt(2, (Integer.parseInt(pageNumber) - 1) * 10);
 			boardList = new ArrayList<BoardDTO>();
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
@@ -186,6 +188,62 @@ public class BoardDAO {
 			}
 		}
 		return "";  //데이터베이스 오류
+	}
+	
+	
+	// 다음페이지 기능
+	public boolean nextPage(String pageNumber) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String SQL = "SELECT * FROM BOARD WHERE boardGroup >= ?";
+		try {
+			conn = dataSource.getConnection();
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setInt(1, Integer.parseInt(pageNumber) * 10);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				return true;
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return false; 
+	}
+	
+	public int targetPage(String pageNumber) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String SQL = "SELECT COUNT(boardGroup) FROM BOARD WHERE boardGroup > ?";
+		try {
+			conn = dataSource.getConnection();
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setInt(1, (Integer.parseInt(pageNumber) - 1) * 10);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				return rs.getInt(1) / 10 ;
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				if(rs != null) rs.close();
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return 0; 
 	}
 	
 	public String getRealFile(String boardID) {

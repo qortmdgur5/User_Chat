@@ -15,7 +15,19 @@
 			response.sendRedirect("index.jsp");
 			return;
 		}
-		ArrayList<BoardDTO> boardList = new BoardDAO().getList();
+		String pageNumber = "1";
+		if (request.getParameter("pageNumber") != null) {
+			pageNumber = request.getParameter("pageNumber");
+		}
+		try {
+			Integer.parseInt(pageNumber);
+		} catch (Exception e) {
+			session.setAttribute("messageType", "오류 메시지");
+			session.setAttribute("messageContent", "페이지 번호가 잘못되었습니다.");
+			response.sendRedirect("boardView.jsp");
+			return;
+		}
+		ArrayList<BoardDTO> boardList = new BoardDAO().getList(pageNumber);
 	%>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -162,7 +174,49 @@
 				}	
 			%>
 				<tr>
-					<td colspan="5"><a href="boardWrite.jsp" class="btn btn-primary pull-right" type="submit">글쓰기</a></td>
+					<td colspan="5">
+						<a href="boardWrite.jsp" class="btn btn-primary pull-right" type="submit">글쓰기</a>
+						<ul class="pagination" style="margin: 0 auto;">
+						<%
+							int startPage = (Integer.parseInt(pageNumber) / 10) * 10 + 1;
+							if(Integer.parseInt(pageNumber) % 10 == 0) startPage -= 10;
+							int targetPage = new BoardDAO().targetPage(pageNumber);
+							if(startPage != 1) {
+						%>
+							<li><a href="boardView.jsp?pageNumber=<%= startPage - 1 %>" class="btn btn-success"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
+						<%
+							} else {
+						%>
+							<li><span class="glyphicon glyphicon-chevron-left" style="color: gray;"></span></li>
+						<%
+							}
+							for(int i = startPage; i < Integer.parseInt(pageNumber); i++) {
+						%>
+							<li><a href="boardView.jsp?pageNumber=<%= i %>"><%= i %></a></li>
+						<%
+							}
+						%>
+							<li class="active"><a href="boardView.jsp?pageNumber=<%= pageNumber %>"><%= pageNumber %></a></li>
+						<%
+							for(int i = Integer.parseInt(pageNumber) + 1; i <= targetPage + Integer.parseInt(pageNumber); i++) {
+								if(i < startPage + 10) {
+						%>
+							<li><a href="boardView.jsp?pageNumber=<%= i %>"><%= i %></a></li>
+						<%
+								}
+							}
+							if(targetPage + Integer.parseInt(pageNumber) > startPage + 9) {
+						%>
+							<li><a href="boardView.jsp?pageNumber=<%= startPage + 10 %>"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
+						<%
+							} else {
+						%>
+							<li><span class="glyphicon glyphicon-chevron-right" style="color: gray;"></span></li>
+						<%
+							}
+						%>
+							</ul>
+					</td>
 				</tr>
 			</tbody>
 		</table>
